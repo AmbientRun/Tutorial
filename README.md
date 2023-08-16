@@ -1,40 +1,16 @@
-# Chapter 4 Messages
+# Chapter 5 Input
 
-In this chapter we will explore how to use the message system to communicate between the client and server.
-
-To define a message, we write in `ambient.toml`:
+We need to define the Input message in order to send from client to the server.
 
 ```toml
-[messages.Hello]
-name = "Hello"
-description = "Sent when a client joins the server, then sent back from the server"
-fields = { cube_id = "EntityId" }
+[messages.Input]
+description = "Describes the input state of the player."
+[messages.Input.fields]
+direction = "Vec2"
+mouse_delta = "Vec2"
+
 ```
 
-We should declare using the message in the client and server:
+In the server, we attach a cube with random color to the player to show the position of the player.
 
-```rust
-use embers::tutorial::messages::Hello;
-```
-
-Then in the `server.rs`:
-
-```rust
-Hello { cube_id: e }.send_client_broadcast_reliable();
-```
-
-In `client.rs`, we subsctibe to the message:
-
-```rust
-Hello::subscribe(|source, msg| {
-    println!("Hello from {:?}. The msg is {:?}", source, msg);
-    let c = entity::get_component(msg.cube_id, color()).unwrap();
-    println!("The color is {:?}", c);
-});
-```
-
-With the `source` and `msg` information, we can do more things.
-
-> There are other types of messages sending, see this [example]().
-
-> Read about the difference between `reliable` and `unreliable` [here]().
+Then at every frame, we will get the current input state from the client and update the position of the player.
