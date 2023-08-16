@@ -1,36 +1,40 @@
-# Chapter 3 Spawn query
+# Chapter 4 Messages
 
-The query system is a powerful tool to get information about the game world. It is used to get information about the player, the game world, and the entities in the game world.
+In this chapter we will explore how to use the message system to communicate between the client and server.
 
-There are three types of queries in Ambient so far:
+To define a message, we write in `ambient.toml`:
 
-- `spawn_query` - often bind to a function that runs once when the entity is spawned
-- `query` - often bind to a function that runs every frame
-- `change_query` - often bind to a function that runs when a component changes
+```toml
+[messages.Hello]
+name = "Hello"
+description = "Sent when a client joins the server, then sent back from the server"
+fields = { cube_id = "EntityId" }
+```
 
-Take `spawn_query` for example: we `spawn_query` one of many components and bind it to a callback function, which will be called when the entity that contains the queried components is spawned. The callback function will be called with the entity as the first argument and the queried components as the rest of the arguments.
-
-In the code example in this chapter, we will use `spawn_query` to check if a new player is spawned:
+We should declare using the message in the client and server:
 
 ```rust
-spawn_query((is_player(), user_id())).bind(|result| {
-    for (e, states) in result {
-        println!("Player: {:?}", e);
-        println!("States: {:?}", states);
-        Entity::new()
-            .with_merge(make_transformable())
-            .with(cube(), ())
-            .with(color(), random::<Vec3>().extend(0.8)) // with extend, Vec3 becomes Quat
-            .with(translation(), random::<Vec3>() * 3.)
-            .spawn();
-    }
+use embers::tutorial::messages::Hello;
+```
+
+Then in the `server.rs`:
+
+```rust
+Hello { cube_id: e }.send_client_broadcast_reliable();
+```
+
+In `client.rs`, we subsctibe to the message:
+
+```rust
+Hello::subscribe(|source, msg| {
+    println!("Hello from {:?}. The msg is {:?}", source, msg);
+    let c = entity::get_component(msg.cube_id, color()).unwrap();
+    println!("The color is {:?}", c);
 });
 ```
 
-When a new player is spawned, we will spawn a cube with a random color and a random position.
+With the `source` and `msg` information, we can do more things.
 
-You can run the project with `ambient run` and run `ambient join` in another terminal to see the result:
+> There are other types of messages sending, see this [example]().
 
-<img src="./spawn.png" width="400" />
-
-For the other two types of queries, we will cover them in the later chapters.
+> Read about the difference between `reliable` and `unreliable` [here]().

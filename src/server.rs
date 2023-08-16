@@ -16,8 +16,10 @@ use ambient_api::{
     prelude::*,
 };
 
+use embers::tutorial::messages::Hello;
+
 #[main]
-pub async fn main() {
+pub fn main() {
     Entity::new()
         .with_merge(make_perspective_infinite_reverse_camera())
         .with(aspect_ratio_from_window(), EntityId::resources())
@@ -30,12 +32,13 @@ pub async fn main() {
         for (e, states) in result {
             println!("Player: {:?}", e);
             println!("States: {:?}", states);
-            Entity::new()
+            let e = Entity::new()
                 .with_merge(make_transformable())
                 .with(cube(), ())
                 .with(color(), random::<Vec3>().extend(0.8)) // with extend, Vec3 becomes Quat
                 .with(translation(), random::<Vec3>() * 3.)
                 .spawn();
+            Hello { cube_id: e }.send_client_broadcast_reliable();
         }
     });
 }

@@ -3,3 +3,8 @@ id = "tutorial"
 name = "tutorial"
 version = "0.0.1"
 categories = ["game/other"]
+
+[messages.Hello]
+name = "Hello"
+description = "Sent when a client joins the server, then sent back from the server"
+fields = { cube_id = "EntityId" }
