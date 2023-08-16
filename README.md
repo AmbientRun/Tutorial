@@ -1,59 +1,43 @@
-# Chapter 1 Project structure
+# Chapter 2 Colliders and async
 
-What you see now is the default template created with `ambient new`.
+In the previous chapter, we left a challenge to create a cube and a plane. Now we will add colliders to them and make the cube move.
 
-We write most of the game logic in `client.rs` and `server.rs`.
+First, we will create a camera and it's identical to the previous chapter.
 
-> Read more here about [where my code should go](https://ambientrun.github.io/Ambient/reference/faq.html#should-my-code-go-on-the-client-or-the-server)?
+Then, we will create the plane. It's mostly the same as the previous chapter but we will add a collider to it.
 
-In `ambient.toml` we define some messages and components for the engine.
-
-> You can read more about ECS [here](https://ambientrun.github.io/Ambient/reference/ecs.html).
-
-In `Cargo.toml` we config Rust-related settings. For example, we often need to keep an eye on the version of `ambient_api` in `Cargo.toml`.
-
-## Run the project
-
-You can run the project with `ambient run`.
-
-Ideally, you will see a Window popping out like this:
-
-<img src="./template.png" width="400" />
-
-## Modify the code
-
-Let's have a look at `client.rs` and `server.rs`.
-
-`client.rs` is almost empty. In this case, we can delete it. And comment out the relevant part in `Cargo.toml`:
-
-```toml
-
-# [[bin]]
-# name = "client_tutorial"
-# path = "src/client.rs"
-# required-features = ["client"]
-
-[[bin]]
-name = "server_tutorial"
-path = "src/server.rs"
-required-features = ["server"]
-
-[features]
-client = ["ambient_api/client"]
-server = ["ambient_api/server"]
-
+```rust
+Entity::new()
+    .with_merge(make_transformable())
+    .with(quad(), ())
+    .with(plane_collider(), ())
+    .spawn();
 ```
 
-In the `server.rs`, we created two entities: a camera and a plane(quad).
+Finally, we create a cube and add a collider to it.
 
-If you have installed all the recommended VS Code tools in the introduction page, you should be able to hover your mouse over each concept or component to see the docs:
+```rust
+let e = Entity::new()
+    .with_merge(make_transformable())
+    .with(cube(), ())
+    .with(cube_collider(), Vec3::ONE)
+    .with(dynamic(), true)
+    .with(translation(), vec3(0., 0., 2.))
+    .with(
+        rotation(),
+        Quat::from_rotation_x(std::f32::consts::FRAC_PI_3),
+    )
+    .spawn();
+```
 
-<img src="./hint.png" width="400" />
+To make it automatically moving by setting `dynamic()` to `true`. So the cube will move while the plane will be static.
 
-## Challenge
+> it's similat to `passive` and `active` in Blender.
 
-Try to create some cubes and change their `translation()`, `scale()`, `rotation()` components.
+Note that the collider of the cube is different from the collider of the plane. The plane is an infinite one, while the cube collider has a size of `Vec3`.
 
-> Hint: You need to have `.with_merge(make_transformable())` to be able to make those components effective.
+## Reset the cube
 
-> Tip: You can refer to the [primitives example](https://github.com/AmbientRun/Ambient/blob/main/guest/rust/examples/basics/primitives/src/server.rs) in the Ambient main GitHub repository.
+We can use `run_async` to schedule things. Note how the `await` and `async` is used inside the `run_async` and don't forget the make the `main` function `async` as well.
+
+`entity::set_component` is used here to reset the position and the rotation of the cube.
