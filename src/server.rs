@@ -10,6 +10,7 @@ use ambient_api::{
             plane_collider,
         },
         player::components::is_player,
+        prefab::components::prefab_from_url,
         primitives::components::{cube, quad},
         rendering::components::color,
         transform::{
@@ -20,7 +21,7 @@ use ambient_api::{
     prelude::*,
 };
 
-use embers::tutorial::{components::player_direction, messages::Input};
+use embers::tutorial::{assets, components::player_direction, messages::Input};
 
 #[main]
 pub fn main() {
@@ -43,8 +44,7 @@ pub fn main() {
                 e,
                 Entity::new()
                     .with(translation(), vec3(0.0, 0.0, 3.0))
-                    .with(cube(), ())
-                    .with(color(), random::<Vec3>().extend(0.8))
+                    .with(prefab_from_url(), assets::url("X Bot.fbx"))
                     .with(player_direction(), Vec2::ZERO)
                     .with(physics_controlled(), ())
                     .with(character_controller_height(), 2.0)
