@@ -5,6 +5,7 @@ use ambient_api::{
         model::components::model_loaded,
         player::components::is_player,
         prefab::components::prefab_from_url,
+        rect::components::{background_color, line_from, line_to, line_width},
         rendering::components::color,
         transform::{
             components::{local_to_parent, reset_scale, rotation, scale, translation},
@@ -16,8 +17,34 @@ use ambient_api::{
 use embers::tutorial::{components::player_model_ref, messages::Input};
 
 use crate::embers::tutorial::assets;
+
+#[element_component]
+pub fn App(_hooks: &mut Hooks) -> Element {
+    Crosshair.el()
+}
+
+#[element_component]
+fn Crosshair(hooks: &mut Hooks) -> Element {
+    let size = hooks.use_window_logical_resolution();
+    let center_x = size.x as f32 / 2.;
+    let center_y = size.y as f32 / 2.;
+
+    Group::el([
+        Line.el()
+            .with(line_from(), vec3(center_x - 10., center_y, 0.))
+            .with(line_to(), vec3(center_x + 10., center_y, 0.))
+            .with(line_width(), 2.),
+        Line.el()
+            .with(line_from(), vec3(center_x, center_y - 10., 0.))
+            .with(line_to(), vec3(center_x, center_y + 10., 0.))
+            .with(line_width(), 2.),
+    ])
+}
+
 #[main]
 pub fn main() {
+    App.el().spawn_interactive();
+
     spawn_query((is_player(), player_model_ref())).bind(move |results| {
         for (_player_id, (_is_player, model)) in results {
             run_async(async move {
