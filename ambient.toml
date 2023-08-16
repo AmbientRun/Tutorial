@@ -37,3 +37,6 @@ description = "Describes the input state of the player."
 [messages.Input.fields]
 direction = "Vec2"
 mouse_delta = "Vec2"
+ray_origin = "Vec3"
+ray_dir = "Vec3"
+shoot = "Bool"

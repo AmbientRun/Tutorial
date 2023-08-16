@@ -89,6 +89,14 @@ pub fn main() {
         let Some(player_id) = source.client_entity_id() else { return; };
         entity::add_component(player_id, player_direction(), msg.direction);
 
+        if msg.shoot {
+            println!("shoot");
+            let result = physics::raycast_first(msg.ray_origin, msg.ray_dir);
+            if let Some(hit) = result {
+                println!("hit: {:?}", hit);
+            }
+        }
+
         // for the camera and movement
         let yaw = entity::mutate_component(player_id, player_yaw(), |yaw| {
             *yaw = (*yaw + msg.mouse_delta.x * 0.01) % TAU;

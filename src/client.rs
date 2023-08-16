@@ -1,6 +1,7 @@
 use ambient_api::{
     animation::{get_bone_by_bind_id, BindId},
     core::{
+        app::components::window_logical_size,
         messages::Frame,
         model::components::model_loaded,
         player::components::is_player,
@@ -14,7 +15,10 @@ use ambient_api::{
     },
     prelude::*,
 };
-use embers::tutorial::{components::player_model_ref, messages::Input};
+use embers::tutorial::{
+    components::{player_cam_ref, player_model_ref},
+    messages::Input,
+};
 
 use crate::embers::tutorial::assets;
 
@@ -74,6 +78,9 @@ pub fn main() {
         }
     });
 
+    let mut last_shot = game_time();
+    let mut is_shooting = false;
+
     Frame::subscribe(move |_| {
         let input = input::get();
 
@@ -91,9 +98,42 @@ pub fn main() {
             direction.x += 1.0;
         }
 
+        let mut shoot = false;
+        if input.mouse_buttons.contains(&MouseButton::Left) {
+            if is_shooting {
+                if game_time() - last_shot > Duration::from_millis(200) {
+                    shoot = true;
+                    last_shot = game_time();
+                }
+            } else {
+                shoot = true;
+                is_shooting = true;
+                last_shot = game_time();
+            }
+        } else {
+            is_shooting = false;
+        }
+
+        let player_id = player::get_local();
+        let cam = entity::get_component(player_id, player_cam_ref());
+        if cam.is_none() {
+            return;
+        }
+
+        let cam = cam.unwrap();
+        let window_size =
+            entity::get_component(entity::resources(), window_logical_size()).unwrap();
+        let ray = camera::screen_position_to_world_ray(
+            cam,
+            vec2(window_size.x as f32 / 2., window_size.y as f32 / 2.),
+        );
+
         Input {
             direction,
             mouse_delta: input.mouse_delta,
+            shoot,
+            ray_origin: ray.origin,
+            ray_dir: ray.dir,
         }
         .send_server_unreliable();
     });
