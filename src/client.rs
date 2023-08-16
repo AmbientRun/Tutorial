@@ -13,13 +13,13 @@ use ambient_api::{
     },
     prelude::*,
 };
-use embers::tutorial::messages::Input;
+use embers::tutorial::{components::player_model_ref, messages::Input};
 
 use crate::embers::tutorial::assets;
 #[main]
 pub fn main() {
-    spawn_query(is_player()).bind(move |results| {
-        for (model, _) in results {
+    spawn_query((is_player(), player_model_ref())).bind(move |results| {
+        for (_player_id, (_is_player, model)) in results {
             run_async(async move {
                 entity::wait_for_component(model, model_loaded()).await;
                 println!("___model loaded___waiting for binding__");
