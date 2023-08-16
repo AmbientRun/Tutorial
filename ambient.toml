@@ -1,0 +1,5 @@
+[ember]
+id = "tutorial"
+name = "tutorial"
+version = "0.0.1"
+categories = ["game/other"]
