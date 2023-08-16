@@ -4,6 +4,11 @@ name = "tutorial"
 version = "0.0.1"
 categories = ["game/other"]
 
+[components]
+player_direction = { type = "Vec2", name = "Player movement direction", description = "The player's movement direction.", attributes = [
+    "Debuggable",
+] }
+
 [messages.Input]
 description = "Describes the input state of the player."
 [messages.Input.fields]
