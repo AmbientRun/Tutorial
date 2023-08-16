@@ -9,6 +9,8 @@ player_direction = { type = "Vec2", name = "Player movement direction", descript
     "Debuggable",
 ] }
 
+blend_node_id = { type = "EntityId", attributes = ["Debuggable", "Networked"] }
+
 [messages.Input]
 description = "Describes the input state of the player."
 [messages.Input.fields]

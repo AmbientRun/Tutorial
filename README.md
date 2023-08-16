@@ -1,36 +1,70 @@
-# Chapter 7 Model import
+# Chapter 8 Animation
 
-Let's add some models to replace the color cube.
+Previously, our model is downloaded from the mixamo with a T-pose.
 
-First, choose a model from [mixamo.com](https://www.mixamo.com/#/?page=1&type=Character).
+Now, we want to add some animations to it. We will download from mixamo `without skin` as the skin is in the T-pose FBX.
 
-Download it with `FBX Binary` and `T-pose`.
+To use animation, we use `ambient assets import` again to import the animation fbx or glb as usual.
 
-Type `ambient assets import` in your terminal and then drag and drop a model file after the command:
+The command line tool will examine the file and report the relevant `anim` files.
 
-```shell
-ambient assets import '/Users/chaosprint/Downloads/X Bot.fbx'
-```
+The detailed usage of animtion can be found [here](https://ambientrun.github.io/Ambient/reference/animations.html).
 
-> you should see a different path based on your machine
+To simplify things, we only use two states: walking and idle.
 
-Ideally, this command will create a folder called `./assets` and there is a `pipeline.toml` inside.
-
-> To know more about `pipeline`, read it [here](https://ambientrun.github.io/Ambient/reference/asset_pipeline.html).
-
-Then in the code, you can use `prefab_from_model` component to use this model.
-
-Replace the `.with(cube(), ())` with the following:
+We will create a `Blend` and then use it with the `query`.
 
 ```rust
-.with(
-    prefab_from_url(),
-    assets::url("X Bot.fbx"),
-)
+
+let idle = PlayClipFromUrlNode::new(assets::url(
+    "Rifle Aiming Idle.fbx/animations/mixamo.com.anim",
+));
+let run =
+    PlayClipFromUrlNode::new(assets::url("Run Forward.fbx/animations/mixamo.com.anim"));
+let blend = BlendNode::new(&idle, &run, 0.0);
+let anim_player = AnimationPlayer::new(&blend);
+
 ```
 
-> Note that you need to declare in Rust that you want to use `assets` first.
+We need to put this in the spawn query. Think about it in this way: each animation is also an entity, so we need to have different ones for different players as these players all acts differently in the world.
 
-You should be able to see the model in the scene and you can move it around with WASD:
+Let's create a component and bind it to the player.
 
-<img src="./model.png" width="400" />
+```toml
+[components]
+# ...
+# other components definition
+# ...
+blend_node = { type = "EnityId", attributes = ["Debuggable", "Networked"] }
+
+```
+
+```rust
+
+entity::add_components(
+                e,
+                Entity::new()
+                    .with(translation(), vec3(0.0, 0.0, 3.0))
+                    .with_default(physics_controlled())
+                    .with(prefab_from_url(), assets::url("X Bot.fbx"))
+                    .with_default(player_movement_direction())
+                    .with(character_controller_height(), 2.)
+                    .with(character_controller_radius(), 0.5)
+                    .with(blend_node_id(), blend.0.get_entity_id())
+                    .with(apply_animation_player(), anim_player.0),
+            );
+```
+
+Finally, inside the `query`, we can use the movement info to determine the animation:
+
+```rust
+if direction != Vec2::ZERO {
+    let blend_node_id = entity::get_component(player_id, blend_node_id()).unwrap();
+    let blend = BlendNode::from_entity(blend_node_id);
+    blend.set_weight(1.0); // running animation
+} else {
+    let blend_node_id = entity::get_component(player_id, blend_node_id()).unwrap();
+    let blend = BlendNode::from_entity(blend_node_id);
+    blend.set_weight(0.0); // idle animation
+}
+```
