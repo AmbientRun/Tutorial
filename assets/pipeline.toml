@@ -9,3 +9,7 @@ sources = ["Run Forward.fbx"]
 [[pipelines]]
 type = "Models"
 sources = ["Rifle Aiming Idle.fbx"]
+
+[[pipelines]]
+type = "Models"
+sources = ["red.glb"]
