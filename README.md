@@ -19,3 +19,4 @@ It's also recommended to setup your IDE for a better Ambient dev experience (see
 This tutorial is divided into several chapters. Each of them comes with a full Ambient project code with explainations. You can find them in each branch of this repository, or you can click the links below to see:
 
 - [Chapter 1: Project Structure](https://github.com/AmbientRun/Tutorial/tree/chapter-1-project-structure)
+- [Chapter 2: Colliders and Async](https://github.com/AmbientRun/Tutorial/tree/chapter-2-async)
