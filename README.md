@@ -1,43 +1,36 @@
-# Chapter 2 Colliders and async
+# Chapter 3 Spawn query
 
-In the previous chapter, we left a challenge to create a cube and a plane. Now we will add colliders to them and make the cube move.
+The query system is a powerful tool to get information about the game world. It is used to get information about the player, the game world, and the entities in the game world.
 
-First, we will create a camera and it's identical to the previous chapter.
+There are three types of queries in Ambient so far:
 
-Then, we will create the plane. It's mostly the same as the previous chapter but we will add a collider to it.
+- `spawn_query` - often bind to a function that runs once when the entity is spawned
+- `query` - often bind to a function that runs every frame
+- `change_query` - often bind to a function that runs when a component changes
 
-```rust
-Entity::new()
-    .with_merge(make_transformable())
-    .with(quad(), ())
-    .with(plane_collider(), ())
-    .spawn();
-```
+Take `spawn_query` for example: we `spawn_query` one of many components and bind it to a callback function, which will be called when the entity that contains the queried components is spawned. The callback function will be called with the entity as the first argument and the queried components as the rest of the arguments.
 
-Finally, we create a cube and add a collider to it.
+In the code example in this chapter, we will use `spawn_query` to check if a new player is spawned:
 
 ```rust
-let e = Entity::new()
-    .with_merge(make_transformable())
-    .with(cube(), ())
-    .with(cube_collider(), Vec3::ONE)
-    .with(dynamic(), true)
-    .with(translation(), vec3(0., 0., 2.))
-    .with(
-        rotation(),
-        Quat::from_rotation_x(std::f32::consts::FRAC_PI_3),
-    )
-    .spawn();
+spawn_query((is_player(), user_id())).bind(|result| {
+    for (e, states) in result {
+        println!("Player: {:?}", e);
+        println!("States: {:?}", states);
+        Entity::new()
+            .with_merge(make_transformable())
+            .with(cube(), ())
+            .with(color(), random::<Vec3>().extend(0.8)) // with extend, Vec3 becomes Quat
+            .with(translation(), random::<Vec3>() * 3.)
+            .spawn();
+    }
+});
 ```
 
-To make it automatically moving by setting `dynamic()` to `true`. So the cube will move while the plane will be static.
+When a new player is spawned, we will spawn a cube with a random color and a random position.
 
-> it's similat to `passive` and `active` in Blender.
+You can run the project with `ambient run` and run `ambient join` in another terminal to see the result:
 
-Note that the collider of the cube is different from the collider of the plane. The plane is an infinite one, while the cube collider has a size of `Vec3`.
+<img src="./spawn.png" width="400" />
 
-## Reset the cube
-
-We can use `run_async` to schedule things. Note how the `await` and `async` is used inside the `run_async` and don't forget the make the `main` function `async` as well.
-
-`entity::set_component` is used here to reset the position and the rotation of the cube.
+For the other two types of queries, we will cover them in the later chapters.
