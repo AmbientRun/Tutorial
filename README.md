@@ -30,7 +30,7 @@ let e = Entity::new()
     .spawn();
 ```
 
-To make it automatically moving by setting `dynamic()` to `true`. So the cube will move while the plane will be static.
+Setting `dynamic()` decides if the physics object is static or dynamic; i.e. if it's affected by collisions, velocity etc. or if it's frozen. So the cube will be moved by physics while the plane will be static.
 
 > it's similat to `passive` and `active` in Blender.
 
@@ -38,6 +38,20 @@ Note that the collider of the cube is different from the collider of the plane. 
 
 ## Reset the cube
 
-We can use `run_async` to schedule things. Note how the `await` and `async` is used inside the `run_async` and don't forget the make the `main` function `async` as well.
+We can use `run_async` to schedule things. Note how the `await` and `async` is used inside the `run_async` and don't forget the make the `main` function `async` as well:
+
+```rust
+run_async(async move {
+    loop {
+        sleep(5.0).await;
+        entity::set_component(e, translation(), vec3(0., 0., 2.));
+        entity::set_component(
+            e,
+            rotation(),
+            Quat::from_rotation_x(std::f32::consts::FRAC_PI_3),
+        );
+    }
+});
+```
 
 `entity::set_component` is used here to reset the position and the rotation of the cube.
