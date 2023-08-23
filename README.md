@@ -24,25 +24,7 @@ Ideally, you will see a Window popping out like this:
 
 Let's have a look at `client.rs` and `server.rs`.
 
-`client.rs` is almost empty. In this case, we can delete it. And comment out the relevant part in `Cargo.toml`:
-
-```toml
-
-# [[bin]]
-# name = "client_tutorial"
-# path = "src/client.rs"
-# required-features = ["client"]
-
-[[bin]]
-name = "server_tutorial"
-path = "src/server.rs"
-required-features = ["server"]
-
-[features]
-client = ["ambient_api/client"]
-server = ["ambient_api/server"]
-
-```
+`client.rs` is almost empty, but we will write things in it on later chapters.
 
 In the `server.rs`, we created two entities: a camera and a plane(quad).
 
@@ -57,3 +39,7 @@ Try to create some cubes and change their `translation()`, `scale()`, `rotation(
 > Hint: You need to have `.with_merge(make_transformable())` to be able to make those components effective.
 
 > Tip: You can refer to the [primitives example](https://github.com/AmbientRun/Ambient/blob/main/guest/rust/examples/basics/primitives/src/server.rs) in the Ambient main GitHub repository.
+
+```
+
+```
