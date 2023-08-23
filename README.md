@@ -3,7 +3,7 @@
 Ambient's UI system is heavily inspired by React (with hooks), and follows many of the same patterns.
 Take a look at the [React documentation](https://react.dev/reference/react) to learn how hooks work in general.
 
-[See all UI examples here](https://github.com/AmbientRun/Ambient/tree/main/guest/rust/examples/ui).
+A good way to learn Ambient UI is to browse [all the UI examples here](https://github.com/AmbientRun/Ambient/tree/main/guest/rust/examples/ui) and choose the relevant ones for your use.
 
 In this example, we just created a simple CrossHair for a better shooting experience:
 
