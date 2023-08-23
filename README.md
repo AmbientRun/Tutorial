@@ -10,7 +10,19 @@ Rust 1.67 or later is required to build Ambient. You can install Rust by followi
 
 Rust programming experience is not required to follow this tutorial, but it is recommended. If you are new to Rust, you can learn the basics of the language on [rust-lang.org](https://www.rust-lang.org/learn).
 
-To install Ambient, see (here)[https://ambientrun.github.io/Ambient/user/installing.html].
+After installing `rust`, you should be able to use command line tool including `rustup` and `cargo`.
+
+You need to run `rustup target add --toolchain stable wasm32-wasi` in your Terminal. This will install the WebAssembly target for the WASI platform, which is required to build Ambient.
+
+Then you can use the `cargo install` command to install Ambient:
+
+```shell
+cargo install --git https://github.com/AmbientRun/Ambient.git --rev ad24915e58 --locked --force ambient
+```
+
+Done!
+
+> If you prefer other methods for installation, see (here)[https://ambientrun.github.io/Ambient/user/installing.html].
 
 It's also recommended to setup your IDE for a better Ambient dev experience (see [here](https://ambientrun.github.io/Ambient/user/setting_up_ide.html)).
 
