@@ -22,7 +22,7 @@ cargo install --git https://github.com/AmbientRun/Ambient.git --rev ad24915e58 -
 
 Done!
 
-> If you prefer other methods for installation, see (here)[https://ambientrun.github.io/Ambient/user/installing.html].
+> If you prefer other methods for installation, see [here](https://ambientrun.github.io/Ambient/user/installing.html).
 
 It's also recommended to setup your IDE for a better Ambient dev experience (see [here](https://ambientrun.github.io/Ambient/user/setting_up_ide.html)).
 
